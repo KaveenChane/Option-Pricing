@@ -86,5 +86,5 @@ void BinaryTree<T>::display() const {
     std::cout << "\n";
 }
 
-#endif // BINARYTREE_H
+#endif
 

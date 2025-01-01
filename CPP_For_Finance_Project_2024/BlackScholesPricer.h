@@ -22,15 +22,11 @@ public:
     
     BlackScholesPricer(EuropeanDigitalOption*, double, double, double);
 
-    // Operator for vanilla option pricing
     double operator()() const;
-
-    // Delta for vanilla options
     double delta() const;
 
-    // New methods for digital option pricing
     double price(const EuropeanDigitalCallOption& option) const;
     double price(const EuropeanDigitalPutOption& option) const;
 };
 
-#endif // BLACKSCHOLESPRICER_H
+#endif

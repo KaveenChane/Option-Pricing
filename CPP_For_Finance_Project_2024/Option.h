@@ -22,5 +22,7 @@ public:
         return { 0 };
     };
 
+    virtual bool isAmericanOption();
+
 };
-#endif // OPTION_H
+#endif

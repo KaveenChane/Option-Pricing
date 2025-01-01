@@ -12,8 +12,6 @@ private:
     double interest_rate;          
     double volatility;            
     int nbPaths;                  
-    //double _currentEstimate;       
-    //double _currentVariance; 
     double sum;
     double sumSquares;
 

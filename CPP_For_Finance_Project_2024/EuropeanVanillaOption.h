@@ -4,7 +4,6 @@
 #include "Option.h"
 #include <stdexcept>
 
-//class BlackScholesPricer;
 
 class EuropeanVanillaOption : public Option {
 public:
@@ -22,4 +21,4 @@ public:
 };
 
 
-#endif // EUROPEANVANILLAOPTION_H
+#endif

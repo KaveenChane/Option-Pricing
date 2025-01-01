@@ -13,15 +13,19 @@ private:
     double _up;                // U
     double _down;              // D
     double _interest_rate;     // R
-    //double _risk_neutral_prob; // q
     BinaryTree<double> _tree;  // Tree to store computed option prices
-    bool _computed;            // Flag to check if compute() has been called
+    bool _computed;            // bool to check if compute() has been called
 
     bool hasArbitrage() const; // Helper to check for arbitrage
+    
+    BinaryTree<bool> exercise; //Modification for American option
 
 public:
     // Constructor
     CRRPricer(Option* option, int depth, double asset_price, double up, double down, double interest_rate);
+    CRRPricer(Option*, int, double, double, double);
+
+    ~CRRPricer() = default;
 
     //Risk neutral prob
     double riskNeutralProbability() const;
@@ -38,6 +42,9 @@ public:
 
     // Overloaded operator() to return the option price
     double operator()(bool closed_form = false);
+
+    // Method to access the exercise tree for American option
+    bool getExercise(int n, int i);
 };
 
-#endif // CRRPRICER_H
+#endif

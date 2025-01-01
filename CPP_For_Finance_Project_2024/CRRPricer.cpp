@@ -23,24 +23,33 @@ bool CRRPricer::hasArbitrage() const {
     return (_down < _interest_rate) && (_interest_rate < _up);
 }
 
-// Compute method using the CRR binomial model
-/*void CRRPricer::compute() {
-    for (int i = 0; i <= _depth; ++i) {
-        double final_price = _asset_price * std::pow(_up, i) * std::pow(_down, _depth - i);
-        _tree.setNode(_depth, i, _option->payoff(final_price)); // Set payoff at maturity
+
+// 2nd constructor, overload of CRRPricer for american options
+
+CRRPricer::CRRPricer(Option* option, int depth, double asset_price, double r, double volatility)
+{
+    //throw exception if it's an asian option
+    if (option->isAsianOption() == true) {
+        throw std::string("CRRPricer can not work with Asian options. Please try with another type of option");
     }
 
-    for (int n = _depth - 1; n >= 0; --n) {
-        for (int i = 0; i <= n; ++i) {
-            double up_value = _tree.getNode(n + 1, i + 1);
-            double down_value = _tree.getNode(n + 1, i);
-            double expected_value = (riskNeutralProbability() * up_value + (1 - riskNeutralProbability()) * down_value) / (1 + _interest_rate);
-            _tree.setNode(n, i, expected_value); // Set option price at node (n, i)
-        }
+    double h = option->getExpiry() / depth;
+    this->_up = exp((r + volatility * volatility / 2) * h + volatility * std::sqrt(h)) - 1;
+    this->_down = exp((r + volatility * volatility / 2) * h - volatility * std::sqrt(h)) - 1;
+    this->_interest_rate = exp(r * h) - 1;
+
+    this->_option = option;
+    this->_depth = depth;
+    this->_asset_price = asset_price;
+
+    if (_down >= _interest_rate || _interest_rate >= _up)
+    {
+        std::cout << "An arbitrage is detected";
+        exit(-1);
     }
-    _computed = true;
+    _tree.setDepth(depth);
+    exercise.setDepth(depth);
 }
-*/
 
 // Getter for H(n, i)
 double CRRPricer::get(int n, int i) {
@@ -59,6 +68,27 @@ void CRRPricer::compute() {
         double payoff = _option->payoff(stockPrice);
         _tree.setNode(_depth, i, payoff);
     }
+
+    if (_option->isAmericanOption())
+    {
+        for (int step = _depth - 1; step >= 0; step--) {
+            for (int i = 0; i <= step; i++) {
+                double upValue = _tree.getNode(step + 1, i + 1);
+                double downValue = _tree.getNode(step + 1, i);
+                double intrinsicValue = _option->payoff(StockPrice(step, i));
+                double discountFactor = 1.0 / (1.0 + _interest_rate);
+
+                double continuationValue = (riskNeutralProbability() * upValue + (1.0 - riskNeutralProbability()) * downValue) * discountFactor;
+
+                bool shouldExercise = intrinsicValue >= continuationValue;
+                exercise.setNode(step, i, shouldExercise);
+
+                double expectedValue = shouldExercise ? intrinsicValue : continuationValue;
+                _tree.setNode(step, i, expectedValue);
+            }
+        }
+    }
+
     for (int step = _depth - 1; step >= 0; step--) {
         for (int i = 0; i <= step; i++) {
             double upValue = _tree.getNode(step + 1, i + 1);
@@ -81,7 +111,7 @@ double CRRPricer::binomialCoefficient(int n, int k) const {
     return res;
 }
 
-// Operator() to return the option price
+// Modification of the operator () to return the option price
 double CRRPricer::operator()(bool closed_form) {
     if (closed_form) {
         double up_factor = 1 + _up;
@@ -101,8 +131,14 @@ double CRRPricer::operator()(bool closed_form) {
         price /= std::pow(1 + _interest_rate, _depth);
         return price;
     } else {
-        if (!_computed) compute(); // Compute if not already done
-        return _tree.getNode(0, 0); // Return price at the root node
+        //compute if not already done
+        if (!_computed) compute();
+        // Return the price at the root node
+        return _tree.getNode(0, 0);
     }
 }
 
+bool CRRPricer::getExercise(int n, int i)
+{
+    return this->exercise.getNode(n, i);
+}

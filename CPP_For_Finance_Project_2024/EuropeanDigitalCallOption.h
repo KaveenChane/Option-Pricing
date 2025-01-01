@@ -9,7 +9,7 @@ public:
     // Constructor
     EuropeanDigitalCallOption(double expiry, double strike);
 
-    // Implement payoff: h(z) = 1 if z >= K, otherwise 0
+    // Payoff implementation
     double payoff(double underlyingPrice) const override;
 
     digitalOptionType getDigitalOptionType() const override;
@@ -17,4 +17,4 @@ public:
     ~EuropeanDigitalCallOption() = default;
 };
 
-#endif // EUROPEAN_DIGITAL_CALL_OPTION_H
+#endif

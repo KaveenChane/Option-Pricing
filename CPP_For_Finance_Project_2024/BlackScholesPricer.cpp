@@ -74,25 +74,3 @@ double BlackScholesPricer::delta() const {
     }
     
 }
-
-/*
-// Digital call option pricing
-double BlackScholesPricer::price(const EuropeanDigitalCallOption& option) const {
-    double strike = option.getStrike();
-    double expiry = option.getExpiry();
-    double d2 = (std::log(_assetPrice / strike) + (_interestRate - 0.5 * _volatility * _volatility) * expiry) /
-                (_volatility * std::sqrt(expiry));
-
-    return std::exp(-_interestRate * expiry) * normalCDF(d2);
-}
-
-// Digital put option pricing
-double BlackScholesPricer::price(const EuropeanDigitalPutOption& option) const {
-    double strike = option.getStrike();
-    double expiry = option.getExpiry();
-    double d2 = (std::log(_assetPrice / strike) + (_interestRate - 0.5 * _volatility * _volatility) * expiry) /
-                (_volatility * std::sqrt(expiry));
-
-    return std::exp(-_interestRate * expiry) * normalCDF(-d2);
-}
-*/

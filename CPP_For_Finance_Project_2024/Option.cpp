@@ -10,7 +10,7 @@ Option::Option(double e) {
 	}
 	else {
 		_expiry = 0;
-		std::cout << "#error: expiry is negative" << std::endl;
+		std::cout << "*ERROR* : Expiry must not be negative" << std::endl;
 	}
 }
 double Option::getExpiry() const {
@@ -23,5 +23,9 @@ double Option::payoffPath(std::vector<double> a) {
 }
 
 bool Option::isAsianOption() {
+	return false;
+}
+
+bool Option::isAmericanOption() {
 	return false;
 }

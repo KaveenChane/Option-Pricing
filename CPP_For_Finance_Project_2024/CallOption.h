@@ -4,7 +4,8 @@
 
 #include "EuropeanVanillaOption.h"
 
-class CallOption : public EuropeanVanillaOption {  // Héritage public
+class CallOption : public EuropeanVanillaOption
+{
 public:
     CallOption(double expiry, double strike);
 
@@ -12,4 +13,4 @@ public:
     optionType getOptionType() const override;
 };
 
-#endif // CALLOPTION_H
+#endif
